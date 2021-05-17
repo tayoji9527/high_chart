@@ -6,13 +6,27 @@ import 'package:flutter/foundation.dart';
 import 'package:high_chart/high_stock_script.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class HighCharts extends StatefulWidget {
-  HighCharts({
-    Key key,
-    @required this.data,
-  }) : super(key: key);
+class HighChartsController {
+  WebViewController _controller;
+  String data;
 
-  final String data;
+  upDate(String data) async {
+    await _controller?.evaluateJavascript('''
+        var a= senthilnasa(`Highcharts.stockChart('chart',
+        ${data ?? ''}
+        )`);
+    ''');
+  }
+}
+
+class HighCharts extends StatefulWidget {
+  HighChartsController controller;
+  HighCharts({Key key, this.initialDataData, this.controller})
+      : super(key: key) {
+    if (controller == null) controller = HighChartsController();
+  }
+
+  final String initialDataData;
 
   @override
   _HighChartsState createState() => _HighChartsState();
@@ -26,21 +40,19 @@ const highChartHtml =
 class _HighChartsState extends State<HighCharts> {
   String _currentData;
 
-  WebViewController _controller;
-
   double _opacity = Platform.isAndroid ? 0.0 : 1.0;
 
   @override
   void initState() {
     super.initState();
-    _currentData = widget.data;
+    _currentData = widget.initialDataData;
   }
 
   void init() async {
-    await _controller?.evaluateJavascript('''
+    await widget.controller._controller?.evaluateJavascript('''
       $highstockScript
         var a= senthilnasa(`Highcharts.stockChart('chart',
-        $_currentData
+        ${_currentData ?? ''}
         )`);
     ''');
   }
@@ -53,7 +65,7 @@ class _HighChartsState extends State<HighCharts> {
         initialUrl: highChartHtml,
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
-          _controller = webViewController;
+          widget.controller._controller = webViewController;
         },
         onPageFinished: (String url) {
           if (Platform.isAndroid) {
