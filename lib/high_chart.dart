@@ -3,8 +3,8 @@ library highchart;
 import 'dart:io' show Platform;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
+import 'package:high_chart/high_stock_script.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'high_chart_script.dart';
 
 class HighCharts extends StatefulWidget {
   HighCharts({
@@ -38,8 +38,8 @@ class _HighChartsState extends State<HighCharts> {
 
   void init() async {
     await _controller?.evaluateJavascript('''
-      $highchartsScript
-        var a= senthilnasa(`Highcharts.chart('chart',
+      $highstockScript
+        var a= senthilnasa(`Highcharts.stockChart('chart',
         $_currentData
         )`);
     ''');
