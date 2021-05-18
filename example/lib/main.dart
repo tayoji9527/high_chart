@@ -21,7 +21,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   List data = [5, 3, 3, 1, 6];
-  HighChartsController controller = HighChartsController();
 
   String get _chart_data => '''{
       title: {
@@ -55,7 +54,8 @@ class _MyAppState extends State<MyApp> {
           type: 'column',
           name: 'Joe',
           data:$data
-      }, {
+      }, 
+      {
           type: 'spline',
           name: 'Average',
           data: $data,
@@ -64,7 +64,8 @@ class _MyAppState extends State<MyApp> {
               lineColor: Highcharts.getOptions().colors[3],
               fillColor: 'white'
           }
-      }, {
+      },
+       {
           type: 'pie',
           name: 'Total consumption',
           data: [{
@@ -91,7 +92,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    print(_chart_data);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -103,8 +103,7 @@ class _MyAppState extends State<MyApp> {
               Container(
                 height: 400,
                 child: HighCharts(
-                  controller: controller,
-                  // initialDataData: _chart_data,
+                  data: _chart_data,
                 ),
               ),
               CupertinoButton(
@@ -118,8 +117,9 @@ class _MyAppState extends State<MyApp> {
                       a.nextInt(10),
                       a.nextInt(10)
                     ];
+                    print(data);
                     setState(() {
-                      controller.upDate(_chart_data);
+                      // controller.upDate(_chart_data);
                     });
                   })
             ],
