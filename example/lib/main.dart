@@ -108,6 +108,9 @@ class _MyAppState extends State<MyApp> {
             Container(
               height: 300,
               child: HighCharts(
+                onLoad: (isLoadStop) {
+                  print(isLoadStop);
+                },
                 data: aaa,
               ),
             ),

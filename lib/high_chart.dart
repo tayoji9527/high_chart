@@ -7,16 +7,14 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:high_chart/high_stock_script.dart';
 
 class HighCharts extends StatefulWidget {
-  HighCharts({Key key, this.data}) : super(key: key);
+  final Function(bool isLoadStop) onLoad;
+  HighCharts({Key key, this.data, this.onLoad}) : super(key: key);
 
   final String data;
 
   @override
   _HighChartsState createState() => _HighChartsState();
 }
-
-String htmlData() =>
-    '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" /> <style type="text/css">html, body,div {touch-action: none;-ms-touch-action: none;height:100%}</style></head><body><div id="chart"></div></body></html><script>$highstockScript function senthilnasa(a){ eval(a); return true;}</script></html>';
 
 /// data:text/html;base64, 'data:text/html;base64,' + base64Encode(const Utf8Encoder().convert( /* STRING ABOVE */ ))
 // const highChartHtml =
@@ -46,6 +44,9 @@ class _HighChartsState extends State<HighCharts> {
     ''');
   }
 
+  String htmlData() =>
+      '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" /> <style type="text/css">html, body,div {touch-action: none;-ms-touch-action: none;height:100%}</style></head><body><div id="chart"></div></body></html><script>$highstockScript function senthilnasa(a){ eval(a); return true;}</script></html>';
+
   @override
   Widget build(BuildContext context) {
     update();
@@ -54,10 +55,13 @@ class _HighChartsState extends State<HighCharts> {
       onWebViewCreated: (controller) async {
         _webViewController = controller;
         update();
+        if (widget.onLoad != null) widget.onLoad(false);
       },
       onLoadStop: (controller, url) {
         update();
+        if (widget.onLoad != null) widget.onLoad(true);
       },
+      onLoadStart: (controller, url) {},
       initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(transparentBackground: true)),
     );
