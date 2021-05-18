@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             children: [
               Container(
-                height: 400,
+                height: 300,
                 child: HighCharts(
                   data: _chart_data,
                 ),

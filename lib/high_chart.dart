@@ -16,7 +16,7 @@ class HighCharts extends StatefulWidget {
 }
 
 String htmlData() =>
-    '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" /> <style type="text/css">html, body {touch-action: none;-ms-touch-action: none;}</style></head><body><div id="chart"></div></body></html><script>$highstockScript function senthilnasa(a){ eval(a); return true;}</script></html>';
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" /> <style type="text/css">html, body,div {touch-action: none;-ms-touch-action: none;height:100%}</style></head><body><div id="chart"></div></body></html><script>$highstockScript function senthilnasa(a){ eval(a); return true;}</script></html>';
 
 /// data:text/html;base64, 'data:text/html;base64,' + base64Encode(const Utf8Encoder().convert( /* STRING ABOVE */ ))
 // const highChartHtml =
