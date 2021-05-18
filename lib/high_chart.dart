@@ -24,6 +24,7 @@ String htmlData() =>
 
 class _HighChartsState extends State<HighCharts> {
   String get _currentData => widget.data;
+  final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController _webViewController;
 
@@ -52,6 +53,9 @@ class _HighChartsState extends State<HighCharts> {
       initialData: InAppWebViewInitialData(data: htmlData()),
       onWebViewCreated: (controller) async {
         _webViewController = controller;
+        update();
+      },
+      onLoadStop: (controller, url) {
         update();
       },
       initialOptions: InAppWebViewGroupOptions(
