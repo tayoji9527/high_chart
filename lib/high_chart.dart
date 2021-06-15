@@ -40,8 +40,15 @@ class _HighChartsState extends State<HighCharts> {
   }
 
   void update() async {
-    await _webViewController?.callAsyncJavaScript(functionBody: '''
+    if (widget.isStock)
+      await _webViewController?.callAsyncJavaScript(functionBody: '''
         var a= senthilnasa(`Highcharts.stockChart('chart',
+        ${_currentData ?? ''}
+        )`);
+    ''');
+    else
+      await _webViewController?.callAsyncJavaScript(functionBody: '''
+        var a= senthilnasa(`Highcharts.chart('chart',
         ${_currentData ?? ''}
         )`);
     ''');
