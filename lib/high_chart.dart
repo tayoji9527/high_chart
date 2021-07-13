@@ -1,89 +1,142 @@
-library highchart;
+library hign_chart;
 
-import 'dart:io' show Platform;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:high_chart/high_chart_script.dart';
 import 'package:high_chart/high_stock_script.dart';
 
-class HighCharts extends StatefulWidget {
-  final Function(bool isLoadStop)? onLoad;
-  HighCharts({Key? key, this.data, this.onLoad, this.isStock = true})
-      : super(key: key);
+class _HignChartController {
+  InAppWebViewController? _appWebViewController;
+  String _option = '';
+  bool _isStock = true;
 
-  final String? data;
-  final bool isStock;
+  Future<void> setOption(String option, List<List> data, bool isStock,
+      {bool resetZoom = false}) async {
+    // await _appWebViewController?.evaluateJavascript(source: '''
+    //   chart= senthilnasa(`Highcharts.${isStock ? 'stockChart' : 'chart'}('chart',$option)`)
+    //   var data = $data;
+    //   for(var i = 0; i< data.length;i++){
+    //     chart.series[i].setData(data[i]);
+    //   }
+    // ''');
+    // return;
+    if (_option != option || isStock != _isStock) {
+      _option = option;
+      _isStock = isStock;
+      await _appWebViewController?.evaluateJavascript(source: '''
+      chart= senthilnasa(`Highcharts.${isStock ? 'stockChart' : 'chart'}('chart',$option)`)
+      var data = $data;
+      
+      for(var i = 0; i< data.length;i++){
+        chart.series[i].setData(data[i]);
+      }
+      
+    ''');
+    } else {
+      await setData(data, resetZoom: resetZoom);
+    }
+  }
 
-  @override
-  _HighChartsState createState() => _HighChartsState();
+  setData(List<List> data, {bool resetZoom = false}) async {
+    await _appWebViewController?.evaluateJavascript(source: '''
+    var data = $data;
+    for(var i = 0; i< data.length;i++){
+      chart.series[i].setData(data[i]);
+    }
+    try {
+      if ($resetZoom){
+      var index = chart.rangeSelector.buttons.length - 1;
+      chart.rangeSelector.clickButton(index);
+      }
+    }
+    catch(err){}
+    ''');
+  }
 }
 
-/// data:text/html;base64, 'data:text/html;base64,' + base64Encode(const Utf8Encoder().convert( /* STRING ABOVE */ ))
-// const highChartHtml =
-//     'PCFET0NUWVBFIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MS4wLCBtYXhpbXVtLXNjYWxlPTEuMCwgbWluaW11bS1zY2FsZT0xLjAsIHVzZXItc2NhbGFibGU9MCIgLz48L2hlYWQ+PGJvZHk+PGRpdiBpZD0iY2hhcnQiPjxoMT5QbGVhc2UgV2FpdCAhISEgPC9oMT48L2Rpdj48L2JvZHk+PC9odG1sPjxzY3JpcHQ+ZnVuY3Rpb24gc2VudGhpbG5hc2EoYSl7IGV2YWwoYSk7IHJldHVybiB0cnVlO30NCjwvc2NyaXB0PjwvaHRtbD4=';
+class HignChart extends StatefulWidget {
+  final String option;
+  final bool isStock;
+  final List<List> data;
+  final bool resetZoom;
 
-class _HighChartsState extends State<HighCharts> {
-  String get _currentData => widget.data ?? '';
-  final GlobalKey webViewKey = GlobalKey();
+  HignChart(
+      {required this.option,
+      required this.data,
+      this.isStock = true,
+      this.resetZoom = false});
+  @override
+  State<StatefulWidget> createState() {
+    return _HignChartState();
+  }
+}
 
-  InAppWebViewController? _webViewController;
+class _HignChartState extends State<HignChart> {
+  _HignChartController? _hignChartController;
+  bool isLoading = true;
 
+  InAppWebViewGroupOptions get _options => InAppWebViewGroupOptions(
+        crossPlatform: InAppWebViewOptions(
+            transparentBackground: true,
+            disableVerticalScroll: true,
+            disableContextMenu: true,
+            disableHorizontalScroll: true),
+        android: AndroidInAppWebViewOptions(
+          useHybridComposition: true,
+        ),
+      );
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void update() async {
-    if (widget.isStock)
-      await _webViewController?.evaluateJavascript(source: '''
-        var a= senthilnasa(`Highcharts.stockChart('chart',
-        $_currentData
-        )`);
-    ''');
-    else
-      await _webViewController?.evaluateJavascript(source: '''
-        var a= senthilnasa(`Highcharts.chart('chart',
-        $_currentData
-        )`);
-
-    ''');
-  }
-
-  String htmlData() =>
-      '''<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" /> <style type="text/css">html, body,div {touch-action: none;-ms-touch-action: none;height:100%;-webkit-touch-callout:none;-webkit-user-select:none; -khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}</style></head><body><div id="chart"></div></body></html><script>
-      ${widget.isStock ? highstockScript : highchartsScript} 
-       function senthilnasa(a){ eval(a); return true;}
+  String htmlData() {
+    return '''<!DOCTYPE html>
+      <head><meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" /> 
+      <style type="text/css">html, body,div {width:100%;height:100%;}</style>
+      </head>
+      <body>
+      <div id="chart"></div></body>
+      <script>
+      ${widget.isStock ? highstockScript : highchartsScript}
+      
+      var chart;
+       function senthilnasa(a){    return eval(a);}
       </script></html>''';
+  }
+
+  int count = 100;
 
   @override
   Widget build(BuildContext context) {
-    update();
-    return InAppWebView(
-      initialData: InAppWebViewInitialData(data: htmlData()),
-      onWebViewCreated: (controller) async {
-        _webViewController = controller;
-        if (widget.onLoad != null) widget.onLoad!(false);
-      },
-      onLoadStop: (controller, url) {
-        update();
-        if (widget.onLoad != null) widget.onLoad!(true);
-      },
-      onLoadStart: (controller, url) {},
-      initialOptions: InAppWebViewGroupOptions(
-          crossPlatform: InAppWebViewOptions(
-        transparentBackground: true,
-        allowUniversalAccessFromFileURLs: true,
-        javaScriptCanOpenWindowsAutomatically: true,
-        javaScriptEnabled: true,
-        horizontalScrollBarEnabled: false,
-        verticalScrollBarEnabled: false,
-      )),
-    );
+    _hignChartController?.setOption(widget.option, widget.data, widget.isStock,
+        resetZoom: widget.resetZoom);
+    return Container(
+        child: Stack(alignment: Alignment.center, children: [
+      InAppWebView(
+        initialData: InAppWebViewInitialData(data: htmlData()),
+        onWebViewCreated: (controller) async {},
+        onLoadStop: (controller, url) async {
+          _hignChartController = _HignChartController()
+            .._appWebViewController = controller;
+          _hignChartController?.setOption(
+              widget.option, widget.data, widget.isStock);
+          isLoading = false;
+          setState(() {});
+        },
+        initialOptions: _options,
+        onConsoleMessage: (c, e) {
+          print(e);
+        },
+      ),
+      Positioned(
+        child: Container(
+          child: isLoading ? CupertinoActivityIndicator() : SizedBox.shrink(),
+        ),
+      )
+    ]));
   }
 }
