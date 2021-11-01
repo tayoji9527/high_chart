@@ -1,82 +1,17 @@
-library hign_chart;
-
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:high_chart/high_chart_script.dart';
-import 'package:high_chart/high_stock_script.dart';
 
-class _HignChartController {
-  InAppWebViewController? _appWebViewController;
-  String _option = '';
-  bool _isStock = true;
+import 'package:high_chart/hign_chart.dart';
+import 'package:high_chart/hign_chart_controller.dart';
+import 'package:high_chart/mobile/high_chart_script.dart';
+import 'package:high_chart/mobile/high_stock_script.dart';
 
-  Future<void> setOption(String option, List<List> data, bool isStock,
-      {bool resetZoom = false}) async {
-    if (_option != option || isStock != _isStock) {
-      _option = option;
-      _isStock = isStock;
-
-      await _appWebViewController?.evaluateJavascript(source: '''
-      chart= senthilnasa(`Highcharts.${isStock ? 'stockChart' : 'chart'}('chart',$option)`)
-      
-      try {
-        var data = $data;
-      for(var i = 0; i< data.length;i++){
-        chart.series[i].setData(data[i]);
-      }
-        var index = chart.rangeSelector.buttons.length - 1;
-        chart.rangeSelector.clickButton(index);
-      }
-      catch(err){}
-      
-    ''');
-    } else {
-      await setData(data, resetZoom: resetZoom);
-    }
-  }
-
-  setData(List<List> data, {bool resetZoom = false}) async {
-    await _appWebViewController?.evaluateJavascript(source: '''
-    
-    try {
-      var data = $data;
-    for(var i = 0; i< data.length;i++){
-      chart.series[i].setData(data[i]);
-    }
-      if ($resetZoom){
-        var index = chart.rangeSelector.buttons.length - 1;
-        chart.rangeSelector.clickButton(index);
-      }
-    }
-    catch(err){}
-    ''');
-  }
-}
-
-class HignChart extends StatefulWidget {
-  final String option;
-  final bool isStock;
-  final List<List> data;
-  final bool resetZoom;
-
-  HignChart(
-      {required this.option,
-      required this.data,
-      this.isStock = true,
-      this.resetZoom = false});
-  @override
-  State<StatefulWidget> createState() {
-    return _HignChartState();
-  }
-}
-
-class _HignChartState extends State<HignChart> {
-  _HignChartController? _hignChartController;
+class HignChartState extends State<HignChart> {
+  HignChartController? _hignChartController;
   bool isLoading = true;
 
   InAppWebViewGroupOptions get _options => InAppWebViewGroupOptions(
@@ -93,6 +28,7 @@ class _HignChartState extends State<HignChart> {
   @override
   void initState() {
     super.initState();
+    // PlatformViewsRegistry
   }
 
   String htmlData() {
@@ -135,8 +71,8 @@ class _HignChartState extends State<HignChart> {
       initialData: InAppWebViewInitialData(data: htmlData()),
       onWebViewCreated: (controller) async {},
       onLoadStop: (controller, url) async {
-        _hignChartController = _HignChartController()
-          .._appWebViewController = controller;
+        _hignChartController = HignChartController()
+          ..appWebViewController = controller;
         _hignChartController?.setOption(
             widget.option, widget.data, widget.isStock);
         isLoading = false;
