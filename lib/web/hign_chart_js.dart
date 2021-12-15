@@ -4,7 +4,7 @@ library highcharts;
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 
-@JS('chart')
+@JS('stockChart')
 class Highcharts {
   external Highcharts(dynamic div, MapOptions options);
 }

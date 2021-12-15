@@ -27,7 +27,6 @@ class HignChartState extends State<HignChart> {
   @override
   void initState() {
     super.initState();
-    // PlatformViewsRegistry
   }
 
   String htmlData() {
