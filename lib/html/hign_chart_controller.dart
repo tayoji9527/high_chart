@@ -13,10 +13,10 @@ class HignChartController extends ChangeNotifier {
   late DivElement element;
   HignChartsType chartsType = HignChartsType.chart;
 
-  dynamic init({dynamic data}) {
+  dynamic init({dynamic data}) async {
     final id = this.hashCode.toString();
     // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(id, (int viewId) {
+    await ui.platformViewRegistry.registerViewFactory(id, (int viewId) {
       element = DivElement()
         ..id = id
         ..style.width = '100%'

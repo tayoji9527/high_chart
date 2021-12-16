@@ -53,9 +53,9 @@ class HignChartController extends ChangeNotifier {
 
   Map? options;
   HignChartsType chartsType = HignChartsType.chart;
-  dynamic init({dynamic data}) {
+  dynamic init({dynamic data}) async {
     appWebViewController = data;
-    reset();
+    await reset();
   }
 
   Future<void> setOptions(Map options) async {}

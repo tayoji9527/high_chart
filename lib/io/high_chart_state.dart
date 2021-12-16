@@ -72,8 +72,8 @@ class HignChartState extends State<HignCharts> {
       initialData: InAppWebViewInitialData(data: htmlData()),
       onWebViewCreated: (controller) async {},
       onLoadStop: (controller, url) async {
+        await this.controller.init(data: controller);
         (widget.onLoad ?? (dynamic) {})(this.controller);
-        this.controller.init(data: controller);
 
         isLoading = false;
         setState(() {});
