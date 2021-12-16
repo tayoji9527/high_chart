@@ -1,20 +1,10 @@
 // ignore: avoid_web_libraries_in_flutter
-
-import 'dart:html';
-
-import 'package:flutter/material.dart';
-import 'package:js/js_util.dart';
-
-import 'package:flutter/scheduler.dart';
-import 'package:high_chart/hign_chart.dart';
-import 'dart:ui' as ui;
-
-import 'package:high_chart/web/hign_chart_js.dart';
+part of highcharts_html;
 
 class HignChartState extends State<HignChart> {
   late DivElement _element;
   late String _divId;
-  late Highcharts _highcharts;
+  late _Highcharts _highcharts;
 
   @override
   void initState() {
@@ -42,7 +32,7 @@ class HignChartState extends State<HignChart> {
   }
 
   void _onPlatformViewCreated() {
-    _highcharts = Highcharts(_element, getOptions(option));
+    _highcharts = _Highcharts(_element, getOptions(option));
   }
 
   @override
@@ -142,7 +132,6 @@ Map get option => {
           },
           'marker': {'enabled': false},
           'pointInterval': 3600000,
-          // 'pointStart': '2009-9-6'
         }
       },
       'series': [

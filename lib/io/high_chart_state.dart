@@ -1,13 +1,4 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
-
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-
-import 'package:high_chart/hign_chart.dart';
-import 'package:high_chart/hign_chart_controller.dart';
-import 'package:high_chart/mobile/high_chart_script.dart';
-import 'package:high_chart/mobile/high_stock_script.dart';
+part of highcharts_io;
 
 class HignChartState extends State<HignChart> {
   HignChartController? _hignChartController;

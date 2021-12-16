@@ -1,24 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:high_chart/hign_charts.dart';
+import 'package:flutter/foundation.dart';
 
-import 'high_chart_state.dart'
-    if (dart.library.html) 'web/high_chart_state.dart'
-    if (dart.library.io) 'mobile/high_chart_state.dart';
-
-class HignChart extends StatefulWidget {
-  final String option;
-  final bool isStock;
-  final List<List> data;
-  final bool resetZoom;
-  final Map? options;
-
-  HignChart(
-      {required this.option,
-      required this.data,
-      this.isStock = true,
-      this.options,
-      this.resetZoom = false});
+class HignChartState extends State<HignChart> {
   @override
-  State<HignChart> createState() {
-    return HignChartState();
+  Widget build(BuildContext context) {
+    return Text(
+        '$defaultTargetPlatform is not yet supported by the HignChart plugin');
   }
 }

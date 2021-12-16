@@ -1,12 +1,26 @@
 @JS('Highcharts')
-library highcharts;
+library highcharts_html;
 
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
+import 'dart:html' show DivElement;
+
+import 'package:flutter/material.dart';
+
+import 'package:flutter/scheduler.dart';
+import 'package:high_chart/hign_charts.dart';
+import 'dart:ui' as ui;
+
+part 'high_chart_state.dart';
+
+@JS('chart')
+class _Highcharts {
+  external _Highcharts(dynamic div, MapOptions options);
+}
 
 @JS('stockChart')
-class Highcharts {
-  external Highcharts(dynamic div, MapOptions options);
+class _Highstocks {
+  external _Highstocks(dynamic div, MapOptions options);
 }
 
 @JS()

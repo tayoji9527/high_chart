@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:high_chart/hign_chart.dart';
+import 'package:high_chart/hign_charts.dart';
 
 void main() {
   runApp(MyApp());
