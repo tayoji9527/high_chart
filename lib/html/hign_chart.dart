@@ -3,30 +3,28 @@ library highcharts_html;
 
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
-import 'dart:html' show DivElement;
 
-import 'package:flutter/material.dart';
+// part 'hign_chart_controller.dart';
 
-import 'package:flutter/scheduler.dart';
-import 'package:high_chart/hign_charts.dart';
-import 'dart:ui' as ui;
-
-part 'high_chart_state.dart';
+@JS()
+abstract class HtmlCharts {
+  external List<Series> get series;
+}
 
 @JS('chart')
-class _Highcharts {
-  external _Highcharts(dynamic div, MapOptions options);
+class Highcharts extends HtmlCharts {
+  external Highcharts(dynamic div, _MapOptions options);
 }
 
 @JS('stockChart')
-class _Highstocks {
-  external _Highstocks(dynamic div, MapOptions options);
+class Highstocks extends HtmlCharts {
+  external Highstocks(dynamic div, _MapOptions options);
 }
 
 @JS()
 @anonymous
-class MapOptions {
-  external factory MapOptions();
+class _MapOptions {
+  external factory _MapOptions();
   external set accessibility(dynamic v);
   external set annotations(dynamic v);
   external set boost(dynamic v);
@@ -53,11 +51,13 @@ class MapOptions {
   external set xAxis(dynamic v);
   external set yAxis(dynamic v);
   external set zAxis(dynamic v);
-  external set series(dynamic v);
+  external set series(List v);
+
+  external set rangeSelector(dynamic v);
 }
 
-MapOptions getOptions(Map o) {
-  final options = MapOptions();
+_MapOptions getOptions(Map o) {
+  final options = _MapOptions();
   dynamic value;
   value = o.jsifyKey('accessibility');
   if (value != null) options.accessibility = value;
@@ -109,8 +109,17 @@ MapOptions getOptions(Map o) {
   if (value != null) options.zAxis = value;
   value = o.jsifyKey('series');
   if (value != null) options.series = value;
+  value = o.jsifyKey('rangeSelector');
+  if (value != null) options.rangeSelector = value;
 
   return options;
+}
+
+@JS()
+class Series {
+  external addPoint(dynamic point, [bool a = true, bool b = true]);
+  external setData(dynamic,
+      [bool redraw = true, bool animation = true, bool updatePoints = true]);
 }
 
 extension _JsifyMap on Map {
@@ -119,21 +128,4 @@ extension _JsifyMap on Map {
       return jsify(this[key]);
     } catch (e) {}
   }
-}
-
-@JS()
-@anonymous
-class MapTitle {
-  external factory MapTitle({
-    String text,
-    Map subtitle,
-  });
-  external String get text;
-}
-
-@JS()
-@anonymous
-class Series {
-  external factory Series();
-  external setData(dynamic data);
 }

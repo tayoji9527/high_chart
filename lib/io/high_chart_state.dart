@@ -1,7 +1,14 @@
-part of highcharts_io;
+import 'dart:io';
 
-class HignChartState extends State<HignChart> {
-  HignChartController? _hignChartController;
+import 'package:flutter/cupertino.dart';
+
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:high_chart/hign_charts.dart';
+import 'package:high_chart/hign_charts_widget.dart';
+import 'high_stock_script.dart';
+
+class HignChartState extends State<HignCharts> {
+  final controller = HignChartController();
   bool isLoading = true;
 
   InAppWebViewGroupOptions get _options => InAppWebViewGroupOptions(
@@ -10,14 +17,22 @@ class HignChartState extends State<HignChart> {
           disableVerticalScroll: true,
           disableContextMenu: Platform.isIOS,
           disableHorizontalScroll: Platform.isIOS),
-      ios: IOSInAppWebViewOptions()
-      // android: AndroidInAppWebViewOptions(
-      //     useHybridComposition: true,
-      //     ),
-      );
+      ios: IOSInAppWebViewOptions());
   @override
   void initState() {
     super.initState();
+
+    controller.options = widget.options;
+    controller.chartsType = widget.chartsType;
+  }
+
+  @override
+  void didUpdateWidget(covariant HignCharts oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (controller.options.hashCode != widget.options.hashCode) {
+      controller.options = widget.options;
+      controller.reset();
+    }
   }
 
   String htmlData() {
@@ -30,7 +45,7 @@ class HignChartState extends State<HignChart> {
       <body>
       <div id="chart"></div></body>
       <script>
-      ${widget.isStock ? highstockScript : highchartsScript}
+      $highstockScript
       
       var chart;
        function senthilnasa(a){    return eval(a);}
@@ -41,9 +56,6 @@ class HignChartState extends State<HignChart> {
 
   @override
   Widget build(BuildContext context) {
-    _hignChartController?.setOption(widget.option, widget.data, widget.isStock,
-        resetZoom: widget.resetZoom);
-
     return Container(
         child: Stack(alignment: Alignment.center, children: [
       _buildWebView(),
@@ -60,10 +72,9 @@ class HignChartState extends State<HignChart> {
       initialData: InAppWebViewInitialData(data: htmlData()),
       onWebViewCreated: (controller) async {},
       onLoadStop: (controller, url) async {
-        _hignChartController = HignChartController()
-          ..appWebViewController = controller;
-        _hignChartController?.setOption(
-            widget.option, widget.data, widget.isStock);
+        (widget.onLoad ?? (dynamic) {})(this.controller);
+        this.controller.init(data: controller);
+
         isLoading = false;
         setState(() {});
       },

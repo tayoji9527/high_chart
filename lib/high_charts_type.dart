@@ -1,0 +1,1 @@
+enum HignChartsType { chart, stockChart }

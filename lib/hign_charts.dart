@@ -1,24 +1,11 @@
-import 'package:flutter/material.dart';
+library hign_charts;
 
-import 'hign_chart.dart'
-    if (dart.library.html) 'html/hign_chart.dart'
-    if (dart.library.io) 'io/hign_chart.dart';
+export 'package:high_chart/high_charts_type.dart';
+export 'package:high_chart/hign_charts_widget.dart';
 
-class HignChart extends StatefulWidget {
-  final String option;
-  final bool isStock;
-  final List<List> data;
-  final bool resetZoom;
-  final Map? options;
-
-  HignChart(
-      {required this.option,
-      required this.data,
-      this.isStock = true,
-      this.options,
-      this.resetZoom = false});
-  @override
-  State<HignChart> createState() {
-    return HignChartState();
-  }
-}
+export 'unknown/high_chart_state.dart'
+    if (dart.library.html) 'html/high_chart_state.dart'
+    if (dart.library.io) 'io/high_chart_state.dart';
+export 'unknown/hign_chart_controller.dart'
+    if (dart.library.html) 'html/hign_chart_controller.dart'
+    if (dart.library.io) 'io/hign_chart_controller.dart';
