@@ -9,7 +9,7 @@ import 'high_stock_script.dart';
 
 class HignChartState extends State<HignCharts> {
   final controller = HignChartController();
-  bool isLoading = true;
+  var isLoadstop = false;
 
   InAppWebViewGroupOptions get _options => InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
@@ -29,10 +29,13 @@ class HignChartState extends State<HignCharts> {
   @override
   void didUpdateWidget(covariant HignCharts oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (controller.options.hashCode != widget.options.hashCode) {
-      controller.options = widget.options;
-      controller.reset();
+    if (isLoadstop) {
+      (widget.onUpdate ?? (dynamic) {})(this.controller);
     }
+    // if (controller.options.hashCode != widget.options.hashCode) {
+    //   controller.options = widget.options;
+    //   controller.reset();
+    // }
   }
 
   String htmlData() {
@@ -61,7 +64,7 @@ class HignChartState extends State<HignCharts> {
       _buildWebView(),
       Positioned(
         child: Container(
-          child: isLoading ? CupertinoActivityIndicator() : SizedBox.shrink(),
+          child: !isLoadstop ? CupertinoActivityIndicator() : SizedBox.shrink(),
         ),
       )
     ]));
@@ -73,9 +76,8 @@ class HignChartState extends State<HignCharts> {
       onWebViewCreated: (controller) async {},
       onLoadStop: (controller, url) async {
         await this.controller.init(data: controller);
+        isLoadstop = true;
         (widget.onLoad ?? (dynamic) {})(this.controller);
-
-        isLoading = false;
         setState(() {});
       },
       initialOptions: _options,

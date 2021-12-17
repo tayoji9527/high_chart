@@ -1,14 +1,12 @@
-// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' show DivElement;
 import 'dart:js_util';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter/scheduler.dart';
 import 'package:high_chart/hign_charts.dart';
-import 'hign_chart.dart';
 
 class HignChartState extends State<HignCharts> {
+  var isLoadstop = false;
   final HignChartController controller = HignChartController();
 
   @override
@@ -17,15 +15,18 @@ class HignChartState extends State<HignCharts> {
 
     controller.options = widget.options;
     controller.chartsType = widget.chartsType;
-    controller.init(data: widget.onLoad);
+    controller.init(data: [widget.onLoad, setLoadstop]);
+  }
+
+  setLoadstop() {
+    isLoadstop = true;
   }
 
   @override
   void didUpdateWidget(covariant HignCharts oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (controller.options.hashCode != widget.options.hashCode) {
-      controller.options = widget.options;
-      controller.reset();
+    if (isLoadstop) {
+      (widget.onUpdate ?? (dynamic) {})(this.controller);
     }
   }
 

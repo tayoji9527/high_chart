@@ -61,7 +61,6 @@ class HignChartController extends ChangeNotifier {
   Future<void> setOptions(Map options) async {}
   Future<void> setData(int index, dynamic data) async {
     await appWebViewController?.evaluateJavascript(source: '''
-
     try {
       chart.series[$index].setData($data);
     }
@@ -72,6 +71,26 @@ class HignChartController extends ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> setRangeSelector(int index) async {
+    await appWebViewController?.evaluateJavascript(source: '''
+      try {
+        chart.rangeSelector.clickButton($index);
+      }
+      catch(err){}
+
+    ''');
+  }
+
+  Future<void> setRangeSelectorLast() async {
+    await appWebViewController?.evaluateJavascript(source: '''
+      try {
+        var index = chart.rangeSelector.buttons.length - 1;
+        chart.rangeSelector.clickButton(index);
+      }
+      catch(err){}
+    ''');
   }
 
   Future<void> reset() async {

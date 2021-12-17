@@ -43,28 +43,49 @@ class _MyAppState extends State<MyApp> {
               Container(
                 height: 500,
                 child: HignCharts(
-                  onLoad: (controller) => this.controller = controller,
+                  onUpdate: (controller) {
+                    print('onUpdate');
+                    controller.reset();
+                  },
+                  onLoad: (controller) {
+                    this.controller = controller;
+                    if (!is1) controller.setData(0, data);
+                  },
                   chartsType:
-                      false ? HignChartsType.chart : HignChartsType.stockChart,
-                  options: false ? option : option1,
+                      is1 ? HignChartsType.chart : HignChartsType.stockChart,
+                  options: is1 ? option : option1,
                 ),
               ),
               CupertinoButton(
                   child: Text('change'),
                   onPressed: () {
                     final rad = Random();
-                    controller?.setData(0, data);
+                    if (!is1) controller?.setData(0, data);
                   }),
               CupertinoButton(
                   child: Text('option'),
                   onPressed: () {
-                    is1 = !is1;
+                    is1 = true;
+                    // controller?.options = option;
+                    // controller?.chartsType = HignChartsType.chart;
+
+                    // controller?.reset();
+                    setState(() {});
+                  }),
+              CupertinoButton(
+                  child: Text('option1'),
+                  onPressed: () async {
+                    is1 = false;
+                    // controller?.options = option1;
+                    // controller?.chartsType = HignChartsType.stockChart;
+                    // await controller?.reset();
+                    // controller?.setData(0, data);
                     setState(() {});
                   }),
               CupertinoButton(
                   child: Text('option'),
                   onPressed: () {
-                    controller?.reset();
+                    controller?.setRangeSelectorLast();
                     setState(() {});
                   })
             ],

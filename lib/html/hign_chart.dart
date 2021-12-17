@@ -9,6 +9,7 @@ import 'package:js/js_util.dart';
 @JS()
 abstract class HtmlCharts {
   external List<Series> get series;
+  external RangeSelector get rangeSelector;
 }
 
 @JS('chart')
@@ -120,6 +121,12 @@ class Series {
   external addPoint(dynamic point, [bool a = true, bool b = true]);
   external setData(dynamic,
       [bool redraw = true, bool animation = true, bool updatePoints = true]);
+}
+
+@JS()
+class RangeSelector {
+  external List<dynamic> get buttons;
+  external clickButton(int index);
 }
 
 extension _JsifyMap on Map {
